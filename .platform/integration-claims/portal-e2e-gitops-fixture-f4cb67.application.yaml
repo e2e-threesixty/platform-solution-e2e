@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-solution-e2e-platform-integration-claim
+  namespace: platform
+  labels:
+    platform.threesixty.dev/integration-claim: "true"
+    platform.threesixty.dev/solution: platform-solution-e2e
+    platform.threesixty.dev/solution-namespace: portal-e2e-gitops-fixture-f4cb67-solution
+    platform.threesixty.dev/managed-by: platform-integration-claims
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: platform-integration-claims
+  source:
+    repoURL: https://github.com/e2e-threesixty/platform-solution-e2e
+    targetRevision: main
+    path: argocd/solutions/portal-e2e-gitops-fixture-f4cb67
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: portal-e2e-gitops-fixture-f4cb67-solution
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
