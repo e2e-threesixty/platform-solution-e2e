@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: portal-e2e-gitops-fixture-567c46-solution
+  namespace: argocd
+  labels:
+    platform.threesixty.dev/solution: portal-e2e-gitops-fixture-567c46
+spec:
+  description: Solution project for portal-e2e-gitops-fixture-567c46
+  sourceNamespaces:
+    - portal-e2e-gitops-fixture-567c46-solution
+    - platform
+  sourceRepos:
+    - 'https://github.com/e2e-threesixty/platform-solution-e2e'
+  destinations:
+    - namespace: portal-e2e-gitops-fixture-567c46-solution
+      server: https://kubernetes.default.svc
+    - namespace: portal-e2e-gitops-fixture-567c46-shared-resources-claims
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  roles:
+    - name: developer
+      policies:
+        - p, proj:portal-e2e-gitops-fixture-567c46-solution:developer, applications, get, portal-e2e-gitops-fixture-567c46-solution/*, allow
+        - p, proj:portal-e2e-gitops-fixture-567c46-solution:developer, applications, sync, portal-e2e-gitops-fixture-567c46-solution/*, allow
+      groups:
+        - portal-e2e-gitops-fixture-567c46-solution-argocd-developer
